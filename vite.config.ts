@@ -14,6 +14,7 @@ export default defineConfig((config) => {
       widget({
         zipName: 'github-reminders',
         generateZip: offlineMode,
+        generateFullNamePackage: true,
       }),
       react(),
 

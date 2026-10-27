@@ -2,20 +2,15 @@
   "name": "com.github.reminders",
   "version": "0.1.0",
   "requiredAppVersion": "26.7.22",
-  "author": "修改成你的信息",
-  "homepage": "",
+  "author": "i125pro",
+  "homepage": "https://github.com/i125pro/reminders-widget",
   "title": {
     "zh-CN": "提醒事项组件包"
   },
   "description": {
     "zh-CN": "提供 iPhone 风格的提醒事项（待办）组件，支持主题与显示项设置"
   },
-  "entry": "/",
-  "remote": {
-    "base": "/",
-    "hostname": "修改成你的域名",
-    "hash": true
-  },
+  "entry": "index.html",
   "hash": true,
   "url": "",
   "widgets": [
