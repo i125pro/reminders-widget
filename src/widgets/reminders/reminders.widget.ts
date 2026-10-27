@@ -12,7 +12,7 @@ const RemindersWidget = new Widget({
   maxWidth: 8,
   minHeight: 3,
   maxHeight: 8,
-  previewImage: '/preview_clock.png',
+  previewImage: '/preview_reminders.png',
   path: '/widget/reminders',
   configPage: {
     path: '/widget/config/reminders',

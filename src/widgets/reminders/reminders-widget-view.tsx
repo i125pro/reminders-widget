@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { BrowserWindowApi, DeployedWidgetApi, WidgetPackageApi } from '@widget-js/core'
 import { useWidget, useWidgetStorage, WidgetWrapper } from '@widget-js/react'
 import styled from 'styled-components'
+import { collectSnapshot, getErrorCount, parseRoute, rerror, rlog, safeSerialize } from '@/utils/renderer-log'
 
 interface Reminder {
   id: string
@@ -20,6 +22,9 @@ export interface RemindersSettings {
 }
 
 type RemindersFilter = 'all' | 'active' | 'completed' | 'flagged'
+
+export const PACKAGE_NAME = 'com.github.reminders'
+export const PREVIEW_IMAGE = '/preview_reminders.png'
 
 export const DEFAULT_SETTINGS: RemindersSettings = {
   title: '提醒事项',
@@ -46,7 +51,24 @@ const FILTERS: { id: RemindersFilter, label: string }[] = [
 
 const uid = () => Math.random().toString(36).slice(2, 10)
 
+function buildPreviewUrl(indexUrl: string | null, previewImage: string): string {
+  if (!indexUrl) {
+    return previewImage
+  }
+  try {
+    if (/^[a-z]+:\/\//i.test(indexUrl)) {
+      return new URL(previewImage, indexUrl).href
+    }
+  }
+  catch {
+    void 0
+  }
+  const base = indexUrl.replace(/index\.html?$/i, '').replace(/\/?$/, '/')
+  return base + previewImage.replace(/^\//, '')
+}
+
 const Root = styled.section`
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -313,6 +335,22 @@ const AddButton = styled.button`
   color: #fff;
 `
 
+const DebugBadge = styled.div`
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  z-index: 50;
+  padding: 4px 8px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 10px;
+  line-height: 1.4;
+  letter-spacing: 0.02em;
+  white-space: pre-wrap;
+  pointer-events: none;
+`
+
 function CheckIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round">
@@ -365,8 +403,10 @@ export default function RemindersWidgetView() {
     title: widgetParams.title || DEFAULT_SETTINGS.title,
   })
   const [reminders, setReminders] = useWidgetStorage<Reminder[]>('items', DEFAULT_REMINDERS)
+  const [debugEnabled] = useWidgetStorage<boolean>('debug-enabled', false)
   const [filter, setFilter] = useState<RemindersFilter>('all')
   const [draft, setDraft] = useState('')
+  const [debugDeployedCount, setDebugDeployedCount] = useState<number | null>(null)
 
   useEffect(() => {
     const previousHtmlBackground = document.documentElement.style.background
@@ -380,6 +420,76 @@ export default function RemindersWidgetView() {
       document.body.style.background = previousBodyBackground
     }
   }, [])
+
+  useEffect(() => {
+    rlog('view: mounted href=', window.location.href)
+    rlog('view: route parse=', JSON.stringify(parseRoute()))
+    rlog('view: widgetParams=', JSON.stringify(widgetParams))
+    rlog('view: settings=', JSON.stringify(settings))
+    rlog('view: reminders=', JSON.stringify(reminders))
+    rlog('view: mount snapshot=', JSON.stringify(collectSnapshot()))
+    return () => {
+      rlog('view: unmounted')
+    }
+  }, [])
+
+  useEffect(() => {
+    let cancelled = false
+    void (async () => {
+      try {
+        const indexUrl = await WidgetPackageApi.getIndexUrl(PACKAGE_NAME)
+        const previewUrl = buildPreviewUrl(indexUrl, PREVIEW_IMAGE)
+        if (!cancelled) {
+          rlog('view: preview diagnosis indexUrl=', indexUrl, 'previewImage=', PREVIEW_IMAGE, 'previewUrl=', previewUrl)
+        }
+      }
+      catch (error) {
+        rerror('view: preview diagnosis failed=', safeSerialize(error))
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!debugEnabled) {
+      return
+    }
+    let cancelled = false
+    void (async () => {
+      try {
+        await BrowserWindowApi.openDevTools()
+      }
+      catch (error) {
+        rerror('view: openDevTools failed=', safeSerialize(error))
+      }
+      try {
+        const indexUrl = await WidgetPackageApi.getIndexUrl(PACKAGE_NAME)
+        const pkg = await WidgetPackageApi.getPackage(PACKAGE_NAME)
+        const deployed = await DeployedWidgetApi.getDeployedWidgets(PACKAGE_NAME)
+        if (!cancelled) {
+          setDebugDeployedCount(deployed.length)
+        }
+        rlog(
+          'view: debug snapshot=',
+          JSON.stringify(collectSnapshot({
+            indexUrl,
+            previewUrl: buildPreviewUrl(indexUrl, PREVIEW_IMAGE),
+            packageVersion: (pkg as unknown as { version?: string } | undefined)?.version ?? '(none)',
+            deployedCount: deployed.length,
+            deployedNames: deployed.map(item => (item as unknown as { name?: string }).name ?? '(unknown)'),
+          })),
+        )
+      }
+      catch (error) {
+        rerror('view: debug snapshot failed=', safeSerialize(error))
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [debugEnabled])
 
   const toggleComplete = useCallback((id: string) => {
     setReminders(reminders.map(item => (
@@ -435,6 +545,10 @@ export default function RemindersWidgetView() {
       return a.createdAt - b.createdAt
     })
   }, [filter, reminders, settings.showCompleted])
+
+  useEffect(() => {
+    rlog('view: render count visible=', visible.length, 'total=', reminders.length)
+  }, [visible.length, reminders.length])
 
   return (
     <WidgetWrapper>
@@ -526,6 +640,12 @@ export default function RemindersWidgetView() {
             </AddButton>
           )}
         </AddRow>
+
+        {debugEnabled && (
+          <DebugBadge>
+            {`route: ${parseRoute().path}\nwidgets: ${debugDeployedCount ?? '…'}\nerrors: ${getErrorCount()}`}
+          </DebugBadge>
+        )}
       </Root>
     </WidgetWrapper>
   )

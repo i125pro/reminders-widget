@@ -1,4 +1,5 @@
 import type { WidgetThemeOption } from '@widget-js/react'
+import { useEffect } from 'react'
 import { useWidgetStorage, useWidgetTheme, WidgetThemeForm, Window } from '@widget-js/react'
 import { Button } from '@/components/ui/button'
 import {
@@ -10,6 +11,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { rlog } from '@/utils/renderer-log'
 import { DEFAULT_SETTINGS, type RemindersSettings } from './reminders-widget-view'
 
 const remindersThemeOption: WidgetThemeOption = {
@@ -24,6 +26,11 @@ const remindersThemeOption: WidgetThemeOption = {
 export default function RemindersConfigView() {
   const { widgetTheme, setWidgetTheme } = useWidgetTheme()
   const [settings, setSettings] = useWidgetStorage<RemindersSettings>('settings', DEFAULT_SETTINGS)
+  const [debugEnabled, setDebugEnabled] = useWidgetStorage<boolean>('debug-enabled', false)
+
+  useEffect(() => {
+    rlog('config: mounted settings=', JSON.stringify(settings), 'debugEnabled=', debugEnabled)
+  }, [])
 
   return (
     <Window
@@ -114,6 +121,19 @@ export default function RemindersConfigView() {
                 id="reminders-show-badge"
                 checked={settings.showBadge}
                 onCheckedChange={checked => setSettings({ ...settings, showBadge: checked })}
+              />
+            </Field>
+
+            <Field orientation="horizontal">
+              <FieldContent>
+                <FieldLabel htmlFor="reminders-debug" className="shrink-0 whitespace-nowrap md:justify-start">
+                  调试模式（开发者）
+                </FieldLabel>
+              </FieldContent>
+              <Switch
+                id="reminders-debug"
+                checked={debugEnabled}
+                onCheckedChange={setDebugEnabled}
               />
             </Field>
           </FieldGroup>
