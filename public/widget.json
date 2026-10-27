@@ -1,0 +1,103 @@
+{
+  "name": "cn.todo.widget",
+  "version": "0.1.0",
+  "author": "i125pro",
+  "homepage": "https://github.com/i125pro/reminders-widget",
+  "title": {
+    "zh-CN": "待办事项组件包"
+  },
+  "description": {
+    "zh-CN": "提供 iPhone 风格的桌面待办事项组件"
+  },
+  "entry": "index.html",
+  "hash": true,
+  "url": "",
+  "widgets": [
+    {
+      "name": "cn.todo.widget.todo",
+      "title": {
+        "zh-CN": "待办事项"
+      },
+      "description": {
+        "zh-CN": "iPhone 风格的待办清单，支持勾选、旗标与主题设置。"
+      },
+      "keywords": [
+        "recommend"
+      ],
+      "security": false,
+      "permissions": [],
+      "lang": "zh-CN",
+      "width": 4,
+      "height": 5,
+      "maxWidth": 8,
+      "webviewTag": false,
+      "maxHeight": 8,
+      "minWidth": 3,
+      "minHeight": 3,
+      "movable": true,
+      "singleton": false,
+      "resizable": true,
+      "path": "/widget/todo",
+      "meta": {},
+      "backgroundThrottling": true,
+      "previewImage": "/preview_todo.png",
+      "categories": [
+        "productivity",
+        "utilities"
+      ],
+      "supportDeployMode": 17,
+      "configPage": {
+        "path": "/widget/config/todo",
+        "frame": true,
+        "transparent": false,
+        "width": 700,
+        "height": 800,
+        "resizable": true,
+        "maximizable": true,
+        "alwaysOnTop": false
+      },
+      "configPagePath": "/widget/config/todo?width=700&height=800&frame=true&transparent=false&resizable=true&maximizable=true"
+    },
+    {
+      "name": "cn.todo.widget.clock",
+      "title": {
+        "zh-CN": "时钟"
+      },
+      "description": {
+        "zh-CN": "Hello world!"
+      },
+      "keywords": [
+        "recommend"
+      ],
+      "security": false,
+      "permissions": [],
+      "lang": "zh-CN",
+      "width": 3,
+      "height": 3,
+      "maxWidth": 6,
+      "webviewTag": false,
+      "maxHeight": 6,
+      "minWidth": 2,
+      "minHeight": 2,
+      "movable": true,
+      "singleton": false,
+      "resizable": true,
+      "path": "/widget/clock",
+      "meta": {},
+      "backgroundThrottling": true,
+      "previewImage": "/preview_clock.png",
+      "supportDeployMode": 17,
+      "configPage": {
+        "path": "/widget/config/clock",
+        "frame": true,
+        "transparent": false,
+        "width": 700,
+        "height": 800,
+        "resizable": true,
+        "maximizable": true,
+        "alwaysOnTop": false
+      }
+    }
+  ],
+  "pages": []
+}

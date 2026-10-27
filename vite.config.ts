@@ -1,0 +1,27 @@
+import { fileURLToPath, URL } from 'node:url'
+import tailwindcss from '@tailwindcss/vite'
+import react from '@vitejs/plugin-react'
+import widget from '@widget-js/vite-plugin-widget'
+import { defineConfig } from 'vite'
+
+export default defineConfig((config) => {
+  const offlineMode = config.mode === 'offline'
+  const base = offlineMode ? './' : '/clock'
+  return {
+    base,
+    plugins: [
+      tailwindcss(),
+      widget({
+        zipName: 'todo-widget',
+        generateZip: offlineMode,
+      }),
+      react(),
+
+    ],
+    resolve: {
+      alias: {
+        '@': fileURLToPath(new URL('./src', import.meta.url)),
+      },
+    },
+  }
+})
