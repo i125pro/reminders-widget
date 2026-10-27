@@ -24,7 +24,7 @@ export interface RemindersSettings {
 type RemindersFilter = 'all' | 'active' | 'completed' | 'flagged'
 
 export const PACKAGE_NAME = 'com.github.reminders'
-export const PREVIEW_IMAGE = '/preview_reminders.png'
+export const PREVIEW_IMAGE = '/preview/preview-reminders.png'
 
 export const DEFAULT_SETTINGS: RemindersSettings = {
   title: '提醒事项',

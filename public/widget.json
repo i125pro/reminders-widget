@@ -41,7 +41,7 @@
       "path": "/widget/reminders",
       "meta": {},
       "backgroundThrottling": true,
-      "previewImage": "/preview_reminders.png",
+      "previewImage": "/preview/preview-reminders.png",
       "supportDeployMode": 17,
       "configPage": {
         "path": "/widget/config/reminders",
