@@ -5,7 +5,6 @@ export default new WidgetPackage({
   description: {
     'zh-CN': '提供 iPhone 风格的提醒事项（待办）组件，支持主题与显示项设置',
   },
-  requiredAppVersion: '26.7.22',
   entry: 'index.html',
   hash: true,
   homepage: 'https://github.com/i125pro/reminders-widget',

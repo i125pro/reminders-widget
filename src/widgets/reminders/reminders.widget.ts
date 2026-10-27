@@ -6,13 +6,14 @@ const RemindersWidget = new Widget({
   description: { 'zh-CN': 'iPhone 风格的待办清单，支持筛选、旗标与主题设置。' },
   keywords: [WidgetKeyword.RECOMMEND],
   lang: 'zh-CN',
+  categories: ['productivity', 'utilities'],
   width: 4,
   height: 5,
   minWidth: 3,
   maxWidth: 8,
   minHeight: 3,
   maxHeight: 8,
-  previewImage: '/preview/preview-reminders.png',
+  previewImage: '/preview_reminders.png',
   path: '/widget/reminders',
   configPage: {
     path: '/widget/config/reminders',
@@ -24,6 +25,7 @@ const RemindersWidget = new Widget({
     maximizable: true,
     alwaysOnTop: false,
   },
+  configPagePath: '/widget/config/reminders?width=700&height=800&frame=true&transparent=false&resizable=true&maximizable=true',
 })
 
 export default RemindersWidget
